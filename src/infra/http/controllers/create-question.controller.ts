@@ -13,6 +13,8 @@ const createQuestionBodySchema = z.object({
     attachments: z.array(z.string().uuid()),
 })
 
+const bodyValidationPipe = new ZodValidationPipe(createQuestionBodySchema)
+
 type CreateQuestionBodySchema = z.infer<typeof createQuestionBodySchema>
 
 
@@ -22,19 +24,17 @@ export class CreateQuestionsController {
     constructor(private createQuestion: CreateQuestionUseCase) { }
 
     @Post()
-    @HttpCode(201)
-    //Pegar dados do corpo da requisicao @Body() body: any
     async handle(
-        @Body(new ZodValidationPipe(createQuestionBodySchema))
-        body: CreateQuestionBodySchema,
-        @CurrentUser() user: UserPayload) {
+        @Body(bodyValidationPipe) body: CreateQuestionBodySchema,
+        @CurrentUser() user: UserPayload,
+    ) {
         const { title, content, attachments } = body
-        const { sub: userId } = user
+        const userId = user.sub
 
         const result = await this.createQuestion.execute({
-            authorId: userId,
             title,
             content,
+            authorId: userId,
             attachmentsIds: attachments,
         })
 

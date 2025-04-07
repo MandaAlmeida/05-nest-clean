@@ -9,6 +9,7 @@ import { UserPayload } from "@/infra/auth/jwt.strategy";
 
 const answerQuestionBodySchema = z.object({
     content: z.string(),
+    attachments: z.array(z.string().uuid())
 })
 
 type AnswerQuestionBodySchema = z.infer<typeof answerQuestionBodySchema>
@@ -28,14 +29,14 @@ export class AnswerQuestionsController {
         @CurrentUser() user: UserPayload,
         @Param("questionId") questionId: string
     ) {
-        const { content } = body
+        const { content, attachments } = body
         const { sub: userId } = user
 
         const result = await this.answerQuestion.execute({
             authorId: userId,
             questionId,
             content,
-            attachmentsIds: [],
+            attachmentsIds: attachments,
         })
 
         if (result.isLeft()) {
