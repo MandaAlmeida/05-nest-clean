@@ -20,9 +20,11 @@ import { AnswerCommentsRepository } from "@/domain/forum/application/repositorie
 import { AnswersRepository } from "@/domain/forum/application/repositories/answers-repository";
 import { AttachmentsRepository } from "@/domain/forum/application/repositories/attachments-repository";
 import { NotificationsRepository } from "@/domain/notification/application/repositories/notifications-repository";
+import { CacheModule } from "../cache/cache.module";
 
 
 @Module({
+    imports: [CacheModule],
     providers: [PrismaService,
         {
             provide: QuestionAttachmentsRepository,
